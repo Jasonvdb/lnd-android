@@ -28,12 +28,19 @@ public class SecondFragment extends Fragment {
         view.findViewById(R.id.button_second).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Lightning.getInstance().createWallet();
-                Snackbar.make(view, "Wallet created", 5000)
-                        .setAction("Action", null).show();
+                Lightning lightning = Lightning.getInstance();
 
-//                NavHostFragment.findNavController(SecondFragment.this)
-//                        .navigate(R.id.action_SecondFragment_to_FirstFragment);
+                String message = "";
+                if (lightning.walletExists()) {
+                    Lightning.getInstance().unlockWallet();
+                    message = "Wallet unlocked";
+                } else {
+                    Lightning.getInstance().createWallet();
+                    message = "Wallet created";
+                }
+
+                Snackbar.make(view, message, 5000)
+                        .setAction("Action", null).show();
             }
         });
     }

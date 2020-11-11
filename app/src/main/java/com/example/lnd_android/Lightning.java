@@ -2,18 +2,20 @@ package com.example.lnd_android;
 
 import android.content.Context;
 import android.content.res.AssetManager;
-
+import com.google.protobuf.ByteString;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
+import java.util.Arrays;
 import lndmobile.Callback;
 import lndmobile.Lndmobile;
+import lnrpc.Walletunlocker;
 
 public class Lightning {
     private static Lightning instance = null;
+    private static String network = "testnet"; //TODO use config
 
     public Context getContext() {
         return context;
@@ -110,12 +112,47 @@ public class Lightning {
             @Override
             public void run() {
                 String password = "Shhhhhhhh";
+                String[] seed = {"about", "pride", "arrest", "ladder", "neutral", "unknown", "duck", "tilt", "electric", "cattle", "skate", "run", "friend", "advance", "melody", "helmet", "fat", "close", "believe", "copper", "unaware", "quote", "above", "decade"};
 
-                System.out.println(password.getBytes());
+                Walletunlocker.InitWalletRequest.Builder initRequest = Walletunlocker.InitWalletRequest.newBuilder();
+                initRequest.setWalletPassword(ByteString.copyFrom(password.getBytes()));
+                initRequest.addAllCipherSeedMnemonic(Arrays.asList(seed));
 
-                Lndmobile.initWallet(password.getBytes(), new CreatedCallback());
+                Lndmobile.initWallet(initRequest.build().toByteArray(), new CreatedCallback());
             }
         };
         new Thread(initWallet).start();
+    }
+
+    public void unlockWallet() {
+        class UnlockCallback implements Callback {
+            @Override
+            public void onError(Exception e) {
+                System.out.println("UNLOCK ERROR");
+                e.printStackTrace();
+            }
+            @Override
+            public void onResponse(byte[] bytes) {
+                System.out.println("WALLET UNLOCK");
+            }
+        }
+
+        Runnable unlockWallet = new Runnable() {
+            @Override
+            public void run() {
+                String password = "Shhhhhhhh";
+
+                Walletunlocker.UnlockWalletRequest.Builder unlockRequest = Walletunlocker.UnlockWalletRequest.newBuilder();
+                unlockRequest.setWalletPassword(ByteString.copyFrom(password.getBytes()));
+
+                Lndmobile.unlockWallet(unlockRequest.build().toByteArray(), new UnlockCallback());
+            }
+        };
+        new Thread(unlockWallet).start();
+    }
+    
+    public boolean walletExists() {
+        File directory = new File(context.getFilesDir().toString() + "/data/chain/bitcoin/" + network + "/wallet.db");
+        return directory.exists();
     }
 }

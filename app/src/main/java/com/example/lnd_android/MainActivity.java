@@ -22,16 +22,6 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         Lightning.getInstance().setContext(getApplicationContext());
-//
-//        FloatingActionButton fab = findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Lightning.getInstance().start();
-//
-//
-//            }
-//        });
     }
 
     @Override
