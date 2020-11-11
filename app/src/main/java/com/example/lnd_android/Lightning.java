@@ -64,7 +64,7 @@ public class Lightning {
         class UnlockCallback implements Callback {
             @Override
             public void onError(Exception e) {
-                System.out.println("UNLOCK ERROR");
+                System.out.println("UNLOCK ERROR. WON'T BE ABLE TO UNLOCK.");
                 System.out.println(e.getMessage());
             }
             @Override
@@ -133,7 +133,7 @@ public class Lightning {
             }
             @Override
             public void onResponse(byte[] bytes) {
-                System.out.println("WALLET UNLOCK");
+                System.out.println("WALLET UNLOCKED");
             }
         }
 
@@ -150,7 +150,7 @@ public class Lightning {
         };
         new Thread(unlockWallet).start();
     }
-    
+
     public boolean walletExists() {
         File directory = new File(context.getFilesDir().toString() + "/data/chain/bitcoin/" + network + "/wallet.db");
         return directory.exists();
